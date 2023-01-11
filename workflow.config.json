@@ -1,0 +1,178 @@
+{
+  "workflow_description": {
+    "name": "alignment_chip",
+    "version": 1.0,
+    "label": "Alignment ChIP",
+    "type": "alignment_chip",
+    "inputs": "raw_fastq/{sample}*",
+    "outputs": [
+      "cleaned_fastq/{sample}*",
+      "mapped/{sample}.bam",
+      "mapped/{sample}.bam.bai",
+      "logs/*",
+      "qc_reports/*"
+    ],
+    "report_index": "qc_reports/all_samples/alignment_chip_multiqc/multiqc.html",
+    "reports":[
+       "qc_reports/*"
+    ]
+  },
+  "general_params": [
+    "entity_name",
+    "sample_name"
+  ],
+  "requested_params": [
+    "is_paired",
+    "UMI"
+  ],
+  "gui_params": {
+    "primary": {
+      "reference": {
+        "label": "Genomic Reference",
+        "type": "enum",
+        "default": ##INCLUDE:reference_info/default_reference.json##,
+        "list": ##INCLUDE:reference_info/reference2.json##
+      }
+    },
+    "detailed": {
+      "preprocess": {
+        "label": "Reads preprocess",
+        "type": "enum",
+        "default": "trim_galore",
+        "list": {
+          "none": "None",
+          "trim_galore": "Automatic",
+          "trimmomatic": "Advanced"
+        }
+      },
+      "trim_adapters": {
+        "label": "Adapters to trim (preprocess)",
+        "type": "string",
+        "default": "",
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "trim_adapters": "trimmomatic"
+            }
+          }
+        }
+      },
+      "min_length": {
+        "label": "Min length (preprocess)",
+        "type": "int",
+        "default": 35,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "trim_adapters": "trimmomatic"
+            }
+          }
+        }
+      },
+      "trim_left1": {
+        "label": "Trim left R1 (preprocess)",
+        "type": "int",
+        "default": 0,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "trim_adapters": "trimmomatic"
+            }
+          }
+        }
+      },
+      "trim_left2": {
+        "label": "Trim left R2 (preprocess)",
+        "type": "int",
+        "default": 0,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "trim_adapters": "trimmomatic"
+            }
+          }
+        }
+      },
+      "trim_right1": {
+        "label": "Trim right R1 (preprocess)",
+        "type": "int",
+        "default": 0,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "trim_adapters": "trimmomatic"
+            }
+          }
+        }
+      },
+      "trim_right2": {
+        "label": "Trim right R2 (preprocess)",
+        "type": "int",
+        "default": 0,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "trim_adapters": "trimmomatic"
+            }
+          }
+        }
+      },
+      "mark_duplicates": {
+        "label": "Mark duplicated reads",
+        "type": "bool",
+        "default": true
+      },
+      "keep_not_markDups_bam": {
+        "label": "Keep not_markDups_bam file",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "mark_duplicates": true
+            }
+          }
+        }
+      },
+      "umi_usage": {
+        "label": "UMI usage",
+        "type": "enum",
+        "default": "mark_duplicates",
+        "list": {
+          "no": "Don't use UMI",
+          "mark_duplicates": "Mark duplicates"
+        },
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": true,
+            "values": {
+              "UMI": "no_umi"
+            }
+          }
+        }
+      },
+       "lib_ROI": {
+        "label": "Regions of interest",
+        "type": "enum",
+        "default": "wgs",
+        "list": {"wgs": "WGS or no DNA panel"}
+      }
+    }
+  }
+}
+
