@@ -54,7 +54,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "trimmomatic"
             }
           }
         }
@@ -68,7 +68,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "trimmomatic"
             }
           }
         }
@@ -82,7 +82,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "trimmomatic"
             }
           }
         }
@@ -96,7 +96,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "trimmomatic"
             }
           }
         }
@@ -110,7 +110,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "trimmomatic"
             }
           }
         }
@@ -124,7 +124,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "trimmomatic"
             }
           }
         }
