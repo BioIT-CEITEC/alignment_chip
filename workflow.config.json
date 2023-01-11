@@ -171,6 +171,66 @@
         "type": "enum",
         "default": "wgs",
         "list": {"wgs": "WGS or no DNA panel"}
+      },
+      "feature_count": {
+        "label": "Feature count",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "RSEM": {
+        "label": "RSEM",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "salmon_align": {
+        "label": "Salmon quantification BAM-based",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "salmon_map": {
+        "label": "Salmon quantification fastq-based",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "kallisto": {
+        "label": "Kallisto",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
       }
     }
   }
