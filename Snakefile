@@ -30,11 +30,14 @@ config["organism"] = config["species_name"].split(" (")[0].lower().replace(" ","
 if len(config["species_name"].split(" (")) > 1:
     config["species"] = config["species_name"].split(" (")[1].replace(")","")
 
+if not "min_qual" in config:
+    config['min_qual'] = "20"
 
 ##### Config processing #####
 # Folders
 #
 reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["reference"])
+fastq_dir = "cleaned_fastq" if (config["preprocess"]!="none") else "raw_fastq"
 
 # Samples
 #

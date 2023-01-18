@@ -38,11 +38,11 @@
       "preprocess": {
         "label": "Reads preprocess",
         "type": "enum",
-        "default": "trim_galore",
+        "default": "automatic",
         "list": {
           "none": "None",
-          "trim_galore": "Automatic",
-          "trimmomatic": "Advanced"
+          "automatic": "Automatic",
+          "advanced": "Advanced"
         }
       },
       "trim_adapters": {
@@ -54,7 +54,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "preprocess": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -68,7 +68,21 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "preprocess": "trimmomatic"
+              "preprocess": "advanced"
+            }
+          }
+        }
+      },
+      "min_qual": {
+        "label": "Trim low-quality ends (preprocess)",
+        "type": "int",
+        "default": 20,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "preprocess": "advanced"
             }
           }
         }
@@ -82,7 +96,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "preprocess": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -96,7 +110,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "preprocess": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -110,7 +124,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "preprocess": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -124,7 +138,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "preprocess": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
