@@ -80,7 +80,7 @@ def alignment_chip_multiqc_inputs(wc):
       'flagstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.flagstat.tsv",sample = sample_tab.sample_name)
     }
     if config["preprocess"]!="none":
-        inputs['trim_stats'] = expand("qc_reports/{sample}/preprocess/trim_stats{rt}.log", sample=sample_tab.sample_name, rt=read_pair_tags)
+        inputs['trim_stats'] = expand("qc_reports/{sample}/trim_galore/trim_stats{rt}.log", sample=sample_tab.sample_name, rt=read_pair_tags)
         inputs['fastqc'] = expand("qc_reports/{sample}/{dir}c/{rt}_fastqc.zip", dir=fastq_dir, rt=pair_tag, sample=sample_tab.sample_name)
     if config["mark_duplicates"]:
         inputs['dup_log'] = expand("qc_reports/{sample}/MarkDuplicates/{sample}.markDups_metrics.txt",sample = sample_tab.sample_name)
