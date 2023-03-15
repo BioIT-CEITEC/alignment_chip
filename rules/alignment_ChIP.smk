@@ -2,7 +2,7 @@
 rule preprocess:
     input:  fastq = expand("raw_fastq/{{sample}}{rt}.fastq.gz",rt=read_pair_tags),
     output: fastq = expand("cleaned_fastq/{{sample}}{rt}.fastq.gz",rt=read_pair_tags),
-            trim_stats = expand("qc_reports/{{sample}}/preprocess/trim_stats{rt}.log",rt=read_pair_tags),
+            trim_stats = expand("qc_reports/{{sample}}/trim_galore/trim_stats{rt}.log",rt=read_pair_tags),
     log:    "logs/{sample}/preprocess.log",
     threads: 15,
     params: paired = config["is_paired"],

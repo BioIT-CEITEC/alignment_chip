@@ -184,7 +184,16 @@
         "label": "Regions of interest",
         "type": "enum",
         "default": "wgs",
-        "list": {"wgs": "WGS or no DNA panel"}
+        "list": {"wgs": "WGS or no DNA panel"},
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "UMI": "It's a hack to never show this in GUI"
+            }
+          }
+        }
       },
       "feature_count": {
         "label": "Feature count",
