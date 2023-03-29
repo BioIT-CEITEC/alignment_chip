@@ -94,6 +94,7 @@ rule alignment_chip_multiqc:
             mark_duplicates = config["mark_duplicates"],
             umi_usage = config["umi_usage"],
             fastqc_dir = fastq_dir+"c",
+            config = workflow.basedir+"/wrappers/alignment_chip_multiqc/multiqc_config.yaml",
     conda: "../wrappers/alignment_chip_multiqc/env.yaml"
     script: "../wrappers/alignment_chip_multiqc/script.py"
 
