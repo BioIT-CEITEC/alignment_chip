@@ -40,7 +40,7 @@ max_length = " --max_length "+str(snakemake.params.crop)
 if snakemake.params.paired:
     trim_ends+= " --clip_R2 "+str(snakemake.params.trim_left2) if int(snakemake.params.trim_left2) > 0 else ""
     trim_ends+= " --three_prime_clip_R2 "+str(snakemake.params.trim_right2) if int(snakemake.params.trim_right2) > 0 else ""
-    #max_length = ""
+    max_length = ""
     
 # ABout cores usage see https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md
 command = "$(which time) trim_galore --gzip" +\
