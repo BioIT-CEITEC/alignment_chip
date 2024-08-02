@@ -11,6 +11,15 @@ GLOBAL_TMPD_PATH = config["globalTmpdPath"]
 
 os.makedirs(GLOBAL_TMPD_PATH, exist_ok=True)
 
+if not 'aligner' in config:
+  config['aligner'] = "bowtie2" # BWA, Bowtie2
+if not 'max_len_frags' in config:
+  config['max_len_frags'] = "120"
+if not 'bowtie2_sens' in config:
+  config['bowtie2_sens'] = "very"
+if not 'dovetailing' in config:
+  config['dovetailing'] = True
+
 # Reference processing
 #
 # if config["lib_ROI"] != "wgs":
@@ -64,3 +73,4 @@ rule all:
 ##### Modules #####
 
 include: "rules/alignment_ChIP.smk"
+# include: "rules/prepare_reference.smk"

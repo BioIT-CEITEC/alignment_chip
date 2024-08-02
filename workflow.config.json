@@ -4,7 +4,7 @@
     "version": 1.0,
     "label": "Alignment ChIP",
     "type": "alignment_chip",
-    "inputs": "raw_fastq/{sample}*",
+    "inputs": "raw_fastq/{sample}*fastq.gz",
     "outputs": [
       "cleaned_fastq/{sample}*",
       "mapped/{sample}.bam",
@@ -32,6 +32,31 @@
         "type": "enum",
         "default": ##INCLUDE:reference_info/default_reference.json##,
         "list": ##INCLUDE:reference_info/reference2.json##
+      },
+      "protocol": {
+        "label": "Library preparation",
+        "info": "Select the library preparation protocol to help configure some default values."
+        "type": "enum",
+        "default": "chipseq",
+        "list": {
+          "chipseq": "ChIP-seq",
+          "car": "Cut&Run"
+        }
+      },
+      "spikein": {
+        "label": "Include spike-in alignment",
+        "info": "Decide, if to do aditional alignment to E. coli spike-in genome. Can be used in downstream analysis for explicit calibration of samples.",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "protocol": "chipseq"
+            }
+          }
+        }
       }
     },
     "detailed": {
@@ -141,6 +166,15 @@
               "preprocess": "advanced"
             }
           }
+        }
+      },
+      "aligner": {
+        "label": "Tool for alignment",
+        "type": "enum",
+        "default": "bowtie2",
+        "list": {
+          "bwa": "BWA",
+          "bowtie2": "Bowtie2"
         }
       },
       "mark_duplicates": {

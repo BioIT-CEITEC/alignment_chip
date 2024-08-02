@@ -33,17 +33,49 @@ rule cleaned_fastq_qc:
     script: "../wrappers/cleaned_fastq_qc/script.py"
 
 
-rule alignment_chip:
+rule alignment_bwa:
     input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
             ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0],
+    output: bam = "mapped/{sample}.not_markDups.BWA.bam",
+            # bai = "mapped/{sample}.not_markDups.bam.bai"
+    log:    "logs/{sample}/alignment_bwa.log"
+    params: entity_name=config["entity_name"],
+    threads: 40
+    conda: "../wrappers/alignment_bwa/env.yaml"
+    script: "../wrappers/alignment_bwa/script.py"
+    
+
+rule alignment_bowtie2:
+    input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
+            ref = expand("{ref_dir}/index/Bowtie2/{ref}.bowtie2_index.ok",ref_dir=reference_directory,ref = config["reference"])[0],
+    output: bam = "mapped/{sample}.not_markDups.bowtie2.bam",
+            # bai = "mapped/{sample}.not_markDups.bam.bai"
+    log:    "logs/{sample}/alignment_bowtie2.log"
+    params: entity_name=config["entity_name"],
+            max_len_frags = config['max_len_frags'],
+            dovetailing = config['dovetailing'],
+            sensitivity = config['bowtie2_sens'],
+            unmapped = "mapped/{sample}.unmapped",
+    threads: 40
+    conda: "../wrappers/alignment_bowtie2/env.yaml"
+    script: "../wrappers/alignment_bowtie2/script.py"
+    
+    
+def index_bam_before_deduplication_input(wc):
+    bam = "mapped/{sample}.not_markDups.BWA.bam"
+    if config['aligner'] == "bowtie2":
+      bam = "mapped/{sample}.not_markDups.bowtie2.bam"
+    return bam
+
+rule index_bam_before_deduplication:
+    input:  bam = index_bam_before_deduplication_input,
     output: bam = "mapped/{sample}.not_markDups.bam",
             bai = "mapped/{sample}.not_markDups.bam.bai"
-    log:    "logs/{sample}/alignment_chip.log"
-    params: entity_name=config["entity_name"]
-    threads: 40
-    conda: "../wrappers/alignment_chip/env.yaml"
-    script: "../wrappers/alignment_chip/script.py"
-
+    log:    "logs/{sample}/index_bam_before_deduplication.log"
+    threads: 4
+    conda: "../wrappers/index_bam_before_deduplication/env.yaml"
+    script: "../wrappers/index_bam_before_deduplication/script.py"
+    
 
 rule mark_duplicates:
     input:  bam = "mapped/{sample}.not_markDups.bam",
@@ -61,8 +93,18 @@ rule mark_duplicates:
     script: "../wrappers/mark_duplicates/script.py"
 
 
+rule max_length_filter:
+    input:  bam = "mapped/{sample}.markDups.bam",
+    output: bam = "mapped/{sample}.markDups.maxLen.bam"
+    log:    "logs/{sample}/max_length_filter.log"
+    threads:  4
+    params: max_len_frags = config['max_len_frags'],
+    conda:  "../wrappers/max_length_filter/env.yaml"
+    script: "../wrappers/max_length_filter/script.py"
+
+
 rule index_and_stats:
-    input:  "mapped/{sample}.markDups.bam",
+    input:  "mapped/{sample}.markDups.maxLen.bam",
     output: bam = "mapped/{sample}.bam",
             bai = "mapped/{sample}.bam.bai",
             idxstats = "qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",
