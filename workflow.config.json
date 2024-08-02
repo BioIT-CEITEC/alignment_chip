@@ -35,7 +35,7 @@
       },
       "protocol": {
         "label": "Library preparation",
-        "info": "Select the library preparation protocol to help configure some default values."
+        "info": "Select the library preparation protocol to help configure some default values.",
         "type": "enum",
         "default": "chipseq",
         "list": {
