@@ -177,6 +177,20 @@
           "bowtie2": "Bowtie2"
         }
       },
+      "max_len_frags": {
+        "label": "Max read len for peak call",
+        "info": "Maximum allowed reads length for peak calling. Longer reads will be removed. For example, for Cut&Run protocol, it matters if reads are shorter than 120 bps if looking for TF binding sites.",
+        "type": "int",
+        "default": 300,
+        "conditions": {
+          "value": {
+            "protocol": {
+              "chipseq": 300,
+              "car": 120
+            }
+          }
+        }
+      },
       "mark_duplicates": {
         "label": "Mark duplicated reads",
         "type": "bool",
