@@ -1,88 +1,81 @@
 
-
-# def trim_adapters_input(wildcards):
-#     if read_pair_tags == [""]:
-#         return "raw_fastq/{sample}.fastq.gz"
-#     else:
-#         return ["raw_fastq/{sample}_R1.fastq.gz","raw_fastq/{sample}_R2.fastq.gz"]
-
-rule automatic_preprocess:
+rule preprocess:
     input:  fastq = expand("raw_fastq/{{sample}}{rt}.fastq.gz",rt=read_pair_tags),
-    output: fastq = expand("cleaned_fastq/{{sample}}{rt}.auto.fastq.gz",rt = read_pair_tags),
-            trim_stats = "qc_reports/{{sample}}/trim_galore/trim_stats.log"
-    log:    "logs/{sample}/automatic_preprocess.log",
-    threads: 8,
+    output: fastq = expand("cleaned_fastq/{{sample}}{rt}.fastq.gz",rt=read_pair_tags),
+            trim_stats = expand("qc_reports/{{sample}}/trim_galore/trim_stats{rt}.log",rt=read_pair_tags),
+    log:    "logs/{sample}/preprocess.log",
+    threads: 15,
     params: paired = config["is_paired"],
-            outdir = "cleaned_fastq",
-    conda: "../wrappers/automatic_preprocess/env.yaml"
-    script: "../wrappers/automatic_preprocess/script.py"
-    
-
-rule advanced_preprocess:
-    input:  raw = expand("raw_fastq/{{sample}}{rt}.fastq.gz",rt=read_pair_tags),
-    output: cleaned = expand("cleaned_fastq/{{sample}}{rt}.advanced.fastq.gz",rt=read_pair_tags),
-            trim_stats = "qc_reports/{sample}/trimmomatic/trim_stats.log"
-    log:    "logs/{sample}/advanced_preprocess.log",
-    threads: 10,
-    resources:  mem = 10,
-    params: adaptors = config["trim_adapters"],
-            r1u = "cleaned_fastq/trimmed/{sample}_R1.discarded.fastq.gz",
-            r2u = "cleaned_fastq/trimmed/{sample}_R2.discarded.fastq.gz",
-            trim_left1 = config["trim_left1"], # Applied only if trim left is true, trimming from R1 (different for classic:0, quant:10, sense:9)
+            adaptors = config["trim_adapters"],
+            r1u = "cleaned_fastq/{sample}_R1.singletons.fastq.gz",
+            r2u = "cleaned_fastq/{sample}_R2.singletons.fastq.gz",
+            trim_left1 = config["trim_left1"], # Applied only if trim left is true, trimming from R1
             trim_right1 = config["trim_right1"], # Applied only if trim right is true, trimming from R1; you should allow this if you want to trim the last extra base and TRIM_LE is true as RD_LENGTH is not effective
-            trim_left2 = config["trim_left2"], # Applied only if trim left is true, trimming from R2 (different for classic:0, quant:?, sense:7)
+            trim_left2 = config["trim_left2"], # Applied only if trim left is true, trimming from R2
             trim_right2 = config["trim_right2"], # Applied only if trim right is true, trimming from R2; you should allow this if you want to trim the last extra base and TRIM_LE is true as RD_LENGTH is not effective
-            phred = "-phred33",
-            leading = 3,
-            trailing = 3,
+            phred = "phred33",
+            qual = config["min_qual"],
             crop = 250,
             minlen = config["min_length"],
-            slid_w_1 = 4,
-            slid_w_2 = 5,
-    conda:  "../wrappers/advanced_preprocess/env.yaml"
-    script: "../wrappers/advanced_preprocess/script.py"
-
-
-# def cleaned_fastq_qc_input(wildcards):
-#     preprocessed = "cleaned_fastq"
-#     if read_pair_tags == ["SE"]:
-#         return os.path.join(preprocessed,"{sample}.fastq.gz")
-#     else:
-#         return expand("cleaned_fastq/{{sample}}{rt}.fastq.gz", rt=read_pair_tags)
+            outdir = "cleaned_fastq",
+    conda: "../wrappers/preprocess/env.yaml"
+    script: "../wrappers/preprocess/script.py"
+    
 
 rule cleaned_fastq_qc:
-    input:  fastq = expand("cleaned_fastq/{{sample}}{rt}.{type}.fastq.gz", rt=read_pair_tags, type="advanced" if config["preprocess"]=="trimmomatic" else "auto"),
-    output: html = "qc_reports/{sample}/cleaned_fastqc/{read_pair_tags}_fastqc.html",
-            fastq = expand("cleaned_fastq/{{sample}}{rt}.fastq.gz", rt=read_pair_tags)
-    log:    "logs/{sample}/cleaned_fastqc_{read_pair_tags}.log"
+    input:  fastq = lambda wc: expand("cleaned_fastq/{{sample}}{rt}.fastq.gz", rt="" if (wc.rt=="SE") else "_"+wc.rt),
+    output: html = "qc_reports/{sample}/cleaned_fastqc/{rt}_fastqc.html",
+            arch = "qc_reports/{sample}/cleaned_fastqc/{rt}_fastqc.zip",
+    log:    "logs/{sample}/cleaned_fastqc_{rt}.log",
     params: extra = "--noextract --format fastq --nogroup",
     threads:  1
     conda:  "../wrappers/cleaned_fastq_qc/env.yaml"
     script: "../wrappers/cleaned_fastq_qc/script.py"
 
 
-def alignment_chip_input(wc):
-    inputs = {
-      'ref': expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0]
-    }
-    preprocessed = "cleaned_fastq" if config["preprocess"] != "None" else "raw_fastq"
-    inputs['fastqs'] = expand("{dir}/{{sample}}{rt}.fastq.gz". dir=preprocessed, rt=read_pair_tags)
-    # inputs['fastqc'] = expand("qc_reports/{{sample}}/{dir}c/{rt}_fastqc.html". dir=preprocessed, rt=pair_tag)
-    return inputs
+rule alignment_bwa:
+    input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
+            ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0],
+    output: bam = "mapped/{sample}.not_markDups.BWA.bam",
+            # bai = "mapped/{sample}.not_markDups.bam.bai"
+    log:    "logs/{sample}/alignment_bwa.log"
+    params: entity_name=config["entity_name"],
+    threads: 40
+    conda: "../wrappers/alignment_bwa/env.yaml"
+    script: "../wrappers/alignment_bwa/script.py"
+    
 
+rule alignment_bowtie2:
+    input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
+            ref = expand("{ref_dir}/index/Bowtie2/{ref}.bowtie2_index.ok",ref_dir=reference_directory,ref = config["reference"])[0],
+    output: bam = "mapped/{sample}.not_markDups.bowtie2.bam",
+            # bai = "mapped/{sample}.not_markDups.bam.bai"
+    log:    "logs/{sample}/alignment_bowtie2.log"
+    params: entity_name=config["entity_name"],
+            max_len_frags = config['max_len_frags'],
+            dovetailing = config['dovetailing'],
+            sensitivity = config['bowtie2_sens'],
+            unmapped = "mapped/{sample}.unmapped",
+    threads: 40
+    conda: "../wrappers/alignment_bowtie2/env.yaml"
+    script: "../wrappers/alignment_bowtie2/script.py"
+    
+    
+def index_bam_before_deduplication_input(wc):
+    bam = "mapped/{sample}.not_markDups.BWA.bam"
+    if config['aligner'] == "bowtie2":
+      bam = "mapped/{sample}.not_markDups.bowtie2.bam"
+    return bam
 
-rule alignment_chip:
-    input:  unpack(alignment_chip_input),
-    # input:  fastqs = alignment_chip_input,
-    #         ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0],
+rule index_bam_before_deduplication:
+    input:  bam = index_bam_before_deduplication_input,
     output: bam = "mapped/{sample}.not_markDups.bam",
             bai = "mapped/{sample}.not_markDups.bam.bai"
-    log:    "logs/{sample}/alignment_chip.log"
-    params: entity_name=config["entity_name"]
-    threads: 40
-    conda: "../wrappers/alignment_chip/env.yaml"
-    script: "../wrappers/alignment_chip/script.py"
-
+    log:    "logs/{sample}/index_bam_before_deduplication.log"
+    threads: 4
+    conda: "../wrappers/index_bam_before_deduplication/env.yaml"
+    script: "../wrappers/index_bam_before_deduplication/script.py"
+    
 
 rule mark_duplicates:
     input:  bam = "mapped/{sample}.not_markDups.bam",
@@ -92,7 +85,6 @@ rule mark_duplicates:
     log:    "logs/{sample}/mark_duplicates.log"
     resources: mem=10
     params: mark_duplicates=config["mark_duplicates"],
-            rmDup=config["remove_duplicates"],
             UMI=config["UMI"],
             umi_usage=config["umi_usage"],
             keep_not_markDups_bam=config["keep_not_markDups_bam"],
@@ -101,32 +93,18 @@ rule mark_duplicates:
     script: "../wrappers/mark_duplicates/script.py"
 
 
-# rule umi_concensus:
-#     input:  bam = "mapped/{sample}.not_markDups.bam",
-#             bai = "mapped/{sample}.not_markDups.bam.bai",
-#             ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref=config["reference"])[0],
-#             lib_ROI = expand("{ref_dir}/intervals/{lib_ROI}/{lib_ROI}.bed",ref_dir=reference_directory,lib_ROI=config["lib_ROI"])[0],
-#             fa = expand("{ref_dir}/seq/{ref}.fa",ref_dir=reference_directory,ref=config["reference"])[0],
-#     output: bam = "mapped/{sample}.concensus.bam",
-#             html = "qc_reports/{sample}/umi_concensus/umi_concensus.html",
-#             json = "qc_reports/{sample}/umi_concensus/umi_concensus.json",
-#     log: "logs/{sample}/umi_concensus.log"
-#     params: umi_consensus_min_support = config["umi_consensus_min_support"],
-#             keep_not_markDups_bam=config["keep_not_markDups_bam"],
-#             tmpd = GLOBAL_TMPD_PATH
-#     conda: "../wrappers/umi_concensus/env.yaml"
-#     script: "../wrappers/umi_concensus/script.py"
+rule max_length_filter:
+    input:  bam = "mapped/{sample}.markDups.bam",
+    output: bam = "mapped/{sample}.markDups.maxLen.bam"
+    log:    "logs/{sample}/max_length_filter.log"
+    threads:  4
+    params: max_len_frags = config['max_len_frags'],
+    conda:  "../wrappers/max_length_filter/env.yaml"
+    script: "../wrappers/max_length_filter/script.py"
 
-
-# def index_and_stats_input(wildcards):
-#     if not config["umi_usage"] == "umi_concensus":
-#         return "mapped/{sample}.markDups.bam"
-#     else:
-#         return "mapped/{sample}.concensus.bam"
 
 rule index_and_stats:
-    # input:  index_and_stats_input,
-    input:  "mapped/{sample}.markDups.bam",
+    input:  "mapped/{sample}.markDups.maxLen.bam",
     output: bam = "mapped/{sample}.bam",
             bai = "mapped/{sample}.bam.bai",
             idxstats = "qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",
@@ -137,15 +115,28 @@ rule index_and_stats:
     script: "../wrappers/index_and_stats/script.py"
 
 
+def alignment_chip_multiqc_inputs(wc):
+    inputs = {
+      'bam' : expand("mapped/{sample}.bam",sample = sample_tab.sample_name),
+      'idxstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",sample = sample_tab.sample_name),
+      'flagstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.flagstat.tsv",sample = sample_tab.sample_name)
+    }
+    if config["preprocess"]!="none":
+        inputs['trim_stats'] = expand("qc_reports/{sample}/trim_galore/trim_stats{rt}.log", sample=sample_tab.sample_name, rt=read_pair_tags)
+        inputs['fastqc'] = expand("qc_reports/{sample}/{dir}c/{rt}_fastqc.zip", dir=fastq_dir, rt=pair_tag, sample=sample_tab.sample_name)
+    if config["mark_duplicates"]:
+        inputs['dup_log'] = expand("qc_reports/{sample}/MarkDuplicates/{sample}.markDups_metrics.txt",sample = sample_tab.sample_name)
+    return inputs
+
 rule alignment_chip_multiqc:
-    input:  bam = expand("mapped/{sample}.bam",sample = sample_tab.sample_name),
-            idxstats = expand("qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",sample = sample_tab.sample_name),
-            fastqc = expand("qc_reports/{sample}/{dir}/{rt}_fastqc.html". dir="cleaned_fastqc" if config['preprocess']!="none" else "raw_fastqc", rt=pair_tag, sample=sample_tab.sample_name)
+    input:  unpack(alignment_chip_multiqc_inputs)
     output: html= "qc_reports/all_samples/alignment_chip_multiqc/multiqc.html"
     log:    "logs/all_samples/alignment_chip_multiqc.log"
-    params: trim_adapters=config["trim_adapters"],
-            mark_duplicates=config["mark_duplicates"],
-            umi_usage = config["umi_usage"]
+    params: trim_adapters = config["preprocess"]!="none",
+            mark_duplicates = config["mark_duplicates"],
+            umi_usage = config["umi_usage"],
+            fastqc_dir = fastq_dir+"c",
+            config = workflow.basedir+"/wrappers/alignment_chip_multiqc/multiqc_config.yaml",
     conda: "../wrappers/alignment_chip_multiqc/env.yaml"
     script: "../wrappers/alignment_chip_multiqc/script.py"
 

@@ -4,7 +4,7 @@
     "version": 1.0,
     "label": "Alignment ChIP",
     "type": "alignment_chip",
-    "inputs": "raw_fastq/{sample}*",
+    "inputs": "raw_fastq/{sample}*fastq.gz",
     "outputs": [
       "cleaned_fastq/{sample}*",
       "mapped/{sample}.bam",
@@ -32,17 +32,42 @@
         "type": "enum",
         "default": ##INCLUDE:reference_info/default_reference.json##,
         "list": ##INCLUDE:reference_info/reference2.json##
+      },
+      "protocol": {
+        "label": "Library preparation",
+        "info": "Select the library preparation protocol to help configure some default values.",
+        "type": "enum",
+        "default": "chipseq",
+        "list": {
+          "chipseq": "ChIP-seq",
+          "car": "Cut&Run"
+        }
+      },
+      "spikein": {
+        "label": "Include spike-in alignment",
+        "info": "Decide, if to do aditional alignment to E. coli spike-in genome. Can be used in downstream analysis for explicit calibration of samples.",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "protocol": "chipseq"
+            }
+          }
+        }
       }
     },
     "detailed": {
       "preprocess": {
         "label": "Reads preprocess",
         "type": "enum",
-        "default": "trim_galore",
+        "default": "automatic",
         "list": {
           "none": "None",
-          "trim_galore": "Automatic",
-          "trimmomatic": "Advanced"
+          "automatic": "Automatic",
+          "advanced": "Advanced"
         }
       },
       "trim_adapters": {
@@ -54,7 +79,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -68,7 +93,21 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "advanced"
+            }
+          }
+        }
+      },
+      "min_qual": {
+        "label": "Trim low-quality ends (preprocess)",
+        "type": "int",
+        "default": 20,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "preprocess": "advanced"
             }
           }
         }
@@ -82,7 +121,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -96,7 +135,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -110,7 +149,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "advanced"
             }
           }
         }
@@ -124,7 +163,63 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "trim_adapters": "trimmomatic"
+              "preprocess": "advanced"
+            }
+          }
+        }
+      },
+      "aligner": {
+        "label": "Tool for alignment",
+        "type": "enum",
+        "default": "bowtie2",
+        "list": {
+          "bwa": "BWA",
+          "bowtie2": "Bowtie2"
+        }
+      },
+      "bowtie2_sens": {
+        "label": "Sensitivity level (alignment)",
+        "type": "enum",
+        "default": "very",
+        "list": {
+          "very": "very sensitive",
+          "normal": "sensitive"
+        },
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "aligner": "bowtie2"
+            }
+          }
+        }
+      },
+      "dovetailing": {
+        "label": "Consider dovetailing (alignment)",
+        "info": "If the mates dovetail, that is if one mate alignment extends past the beginning of the other such that the wrong mate begins upstream, consider that to be concordant.",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "aligner": "bowtie2"
+            }
+          }
+        }
+      },
+      "max_len_frags": {
+        "label": "Max length (alignment)",
+        "info": "Maximum allowed reads length for peak calling. Longer reads will be removed. For example, for Cut&Run protocol, it matters if reads are shorter than 120 bps if looking for TF binding sites.",
+        "type": "int",
+        "default": 300,
+        "conditions": {
+          "value": {
+            "protocol": {
+              "chipseq": 300,
+              "car": 120
             }
           }
         }
@@ -170,7 +265,76 @@
         "label": "Regions of interest",
         "type": "enum",
         "default": "wgs",
-        "list": {"wgs": "WGS or no DNA panel"}
+        "list": {"wgs": "WGS or no DNA panel"},
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "UMI": "It's a hack to never show this in GUI"
+            }
+          }
+        }
+      },
+      "feature_count": {
+        "label": "Feature count",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "RSEM": {
+        "label": "RSEM",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "salmon_align": {
+        "label": "Salmon quantification BAM-based",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "salmon_map": {
+        "label": "Salmon quantification fastq-based",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "kallisto": {
+        "label": "Kallisto",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
       }
     }
   }

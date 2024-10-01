@@ -11,6 +11,15 @@ GLOBAL_TMPD_PATH = config["globalTmpdPath"]
 
 os.makedirs(GLOBAL_TMPD_PATH, exist_ok=True)
 
+if not 'aligner' in config:
+  config['aligner'] = "bowtie2" # BWA, Bowtie2
+if not 'max_len_frags' in config:
+  config['max_len_frags'] = "120"
+if not 'bowtie2_sens' in config:
+  config['bowtie2_sens'] = "very"
+if not 'dovetailing' in config:
+  config['dovetailing'] = True
+
 # Reference processing
 #
 # if config["lib_ROI"] != "wgs":
@@ -30,11 +39,14 @@ config["organism"] = config["species_name"].split(" (")[0].lower().replace(" ","
 if len(config["species_name"].split(" (")) > 1:
     config["species"] = config["species_name"].split(" (")[1].replace(")","")
 
+if not "min_qual" in config:
+    config['min_qual'] = "20"
 
 ##### Config processing #####
 # Folders
 #
 reference_directory = os.path.join(GLOBAL_REF_PATH,config["organism"],config["reference"])
+fastq_dir = "cleaned_fastq" if (config["preprocess"]!="none") else "raw_fastq"
 
 # Samples
 #
@@ -61,3 +73,4 @@ rule all:
 ##### Modules #####
 
 include: "rules/alignment_ChIP.smk"
+# include: "rules/prepare_reference.smk"
