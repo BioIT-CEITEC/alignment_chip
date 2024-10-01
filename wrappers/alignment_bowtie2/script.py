@@ -51,8 +51,3 @@ f.write("## COMMAND: "+command+"\n")
 f.close()
 shell(command)
 
-# command = "$(which time) samtools index -@ " +str(snakemake.threads)+" -b "+snakemake.output.bam+" >> "+log_filename+ " 2>&1"
-# f = open(log_filename, 'at')
-# f.write("## COMMAND: "+command+"\n")
-# f.close()
-# shell(command)

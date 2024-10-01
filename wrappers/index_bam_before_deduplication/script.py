@@ -15,15 +15,6 @@ f = open(log_filename, 'at')
 f.write("## CONDA:\n"+version+"\n")
 f.close()
 
-
-# command = "$(which time) samtools sort -@ " + str(snakemake.threads) + \
-#           " -o " +snakemake.output.bam + " " + str(snakemake.input.bam)+" >> "+log_filename+" 2>&1"
-# command = "cp "+snakemake.input.bam+" "+snakemake.output.bam+" >> "+log_filename+" 2>&1"
-# f = open(log_filename, 'at')
-# f.write("## COMMAND: "+command+"\n")
-# f.close()
-# shell(command)
-
 command = "$(which time) samtools index -@ " + str(snakemake.threads) + " -b " + snakemake.input.bam+" "+snakemake.output.bai+" >> "+log_filename+" 2>&1"
 f = open(log_filename, 'at')
 f.write("## COMMAND: "+command+"\n")
@@ -36,21 +27,3 @@ f.write("## COMMAND: "+command+"\n")
 f.close()
 shell(command)
 
-# command = "$(which time) samtools idxstats "+snakemake.output.bam+" > "+snakemake.output.idxstats+" 2>> "+log_filename
-# f = open(log_filename, 'at')
-# f.write("## COMMAND: "+command+"\n")
-# f.close()
-# shell(command)
-# 
-# command ="$(which time) samtools flagstat "+snakemake.output.bam+" > "+snakemake.output.flagstats+" 2>> "+log_filename
-# f = open(log_filename, 'at')
-# f.write("## COMMAND: "+command+"\n")
-# f.close()
-# shell(command)
-
-
-# command = "rm " + str(snakemake.input.bam)+" >> "+log_filename+" 2>&1"
-# f = open(log_filename, 'at')
-# f.write("## COMMAND: " + command + "\n")
-# f.close()
-# shell(command)

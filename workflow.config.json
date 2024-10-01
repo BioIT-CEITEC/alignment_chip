@@ -177,6 +177,43 @@
           "bowtie2": "Bowtie2"
         }
       },
+      "bowtie2_sens": {
+        "label": "Sensitivity level (alignment)",
+        "type": "enum",
+        "default": "very",
+        "list": {
+          "very": "very sensitive",
+          "normal": "sensitive"
+        },
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "aligner": "bowtie2"
+            }
+          }
+        }
+      },
+      "dovetailing": {
+        "label": "Allow dovetail (alignment)",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {
+              "aligner": "bowtie2"
+            }
+          }
+        }
+      },
+      "max_len_frags": {
+        "label": "Max length (alignment)",
+        "type": "int",
+        "default": 120
+      },
       "mark_duplicates": {
         "label": "Mark duplicated reads",
         "type": "bool",
