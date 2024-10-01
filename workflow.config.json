@@ -196,7 +196,8 @@
         }
       },
       "dovetailing": {
-        "label": "Allow dovetail (alignment)",
+        "label": "Consider dovetailing (alignment)",
+        "info": "If the mates dovetail, that is if one mate alignment extends past the beginning of the other such that the wrong mate begins upstream, consider that to be concordant.",
         "type": "bool",
         "default": false,
         "conditions": {
@@ -211,8 +212,17 @@
       },
       "max_len_frags": {
         "label": "Max length (alignment)",
+        "info": "Maximum allowed reads length for peak calling. Longer reads will be removed. For example, for Cut&Run protocol, it matters if reads are shorter than 120 bps if looking for TF binding sites.",
         "type": "int",
-        "default": 120
+        "default": 300,
+        "conditions": {
+          "value": {
+            "protocol": {
+              "chipseq": 300,
+              "car": 120
+            }
+          }
+        }
       },
       "mark_duplicates": {
         "label": "Mark duplicated reads",
