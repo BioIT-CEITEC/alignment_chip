@@ -53,7 +53,7 @@
             "operand": "equal",
             "negation": false,
             "values": {
-              "protocol": "chipseq"
+              "protocol": "car"
             }
           }
         }
@@ -87,7 +87,7 @@
       "min_length": {
         "label": "Min length (preprocess)",
         "type": "int",
-        "default": 35,
+        "default": 25,
         "conditions": {
           "relevance": {
             "operand": "equal",
@@ -101,7 +101,7 @@
       "min_qual": {
         "label": "Trim low-quality ends (preprocess)",
         "type": "int",
-        "default": 20,
+        "default": 30,
         "conditions": {
           "relevance": {
             "operand": "equal",
@@ -207,18 +207,24 @@
             "values": {
               "aligner": "bowtie2"
             }
+          },
+          "value": {
+            "protocol": {
+              "chipseq": false,
+              "car": true
+            }
           }
         }
       },
       "max_len_frags": {
-        "label": "Max length (alignment)",
-        "info": "Maximum allowed reads length for peak calling. Longer reads will be removed. For example, for Cut&Run protocol, it matters if reads are shorter than 120 bps if looking for TF binding sites.",
+        "label": "Max fragment length (alignment)",
+        "info": "Maximum allowed fragment length for peak calling. Longer fragments will be removed. For example, for Cut&Run protocol, it matters if fragments are shorter than 120 bps if looking for TF binding sites.",
         "type": "int",
-        "default": 300,
+        "default": 1000,
         "conditions": {
           "value": {
             "protocol": {
-              "chipseq": 300,
+              "chipseq": 1000,
               "car": 120
             }
           }

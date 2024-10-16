@@ -16,7 +16,7 @@ f.write("## CONDA:\n"+version+"\n")
 f.close()
 
 
-command = "$(which time) samtools view -hb -e 'length(seq)<"+str(snakemake.params.max_len_frags)+"' -@ " + str(snakemake.threads) + \
+command = "$(which time) samtools view -hb -e 'tlen < "+str(snakemake.params.max_len_frags)+" && tlen > -"+str(snakemake.params.max_len_frags)+"' -@ " + str(snakemake.threads) + \
           " -o " +snakemake.output.bam + " " + snakemake.input.bam+" >> "+log_filename+" 2>&1"
 f = open(log_filename, 'at')
 f.write("## COMMAND: "+command+"\n")
