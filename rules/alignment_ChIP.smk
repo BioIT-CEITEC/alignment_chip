@@ -35,9 +35,9 @@ rule cleaned_fastq_qc:
 
 rule alignment_bwa:
     input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
-            ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0],
+            # ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0],
+            ref = expand("{ref_dir}/tool_data/BWA/{ref}.bwt",ref_dir=reference_directory,ref=config["reference"])[0],
     output: bam = "mapped/{sample}.not_markDups.BWA.bam",
-            # bai = "mapped/{sample}.not_markDups.bam.bai"
     log:    "logs/{sample}/alignment_bwa.log"
     params: entity_name=config["entity_name"],
     threads: 40
@@ -47,12 +47,12 @@ rule alignment_bwa:
 
 rule alignment_bowtie2:
     input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
-            ref = expand("{ref_dir}/index/Bowtie2/{ref}.bowtie2_index.ok",ref_dir=reference_directory,ref = config["reference"])[0],
+            # ref = expand("{ref_dir}/index/Bowtie2/{ref}.bowtie2_index.ok",ref_dir=reference_directory,ref = config["reference"])[0],
+            ref = expand("{ref_dir}/tool_data/Bowtie2/{ref}.1.bt2",ref_dir=reference_directory,ref=config["reference"])[0],
     output: bam = "mapped/{sample}.not_markDups.bowtie2.bam",
-            # bai = "mapped/{sample}.not_markDups.bam.bai"
     log:    "logs/{sample}/alignment_bowtie2.log"
-    params: entity_name=config["entity_name"],
-            max_len_frags = config['max_len_frags'],
+    params: entity_name = config["entity_name"],
+            protocol = config['protocol'],
             dovetailing = config['dovetailing'],
             sensitivity = config['bowtie2_sens'],
             unmapped = "mapped/{sample}.unmapped",

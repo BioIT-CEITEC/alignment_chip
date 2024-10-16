@@ -16,7 +16,7 @@ f = open(log_filename, 'at')
 f.write("## CONDA:\n"+version+"\n")
 f.close()
 
-index_prefix = re.sub(".bowtie2_index.ok$","",snakemake.input.ref)
+index_prefix = re.sub(".1.bt2$","",snakemake.input.ref)
 
 input_reads = ""
 if len(snakemake.input.fastq) == 2:
@@ -27,8 +27,8 @@ else:
   input_reads = " -U "+snakemake.input.fastq[0]
   unmapped_reads = " --un-gz "+snakemake.params.unmapped+".fastq.gz"
   
-special_arguments = " --no-mixed --no-discordant --phred33 -I 10 -X 700"
-if int(snakemake.params.max_len_frags) < 121:
+special_arguments = " --no-mixed --no-discordant --phred33 -I 10 -X 1000"
+if snakemake.params.protocol == "car":
   special_arguments += " --end-to-end"
 else:
   special_arguments += " --local"
