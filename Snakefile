@@ -21,13 +21,13 @@ if not 'dovetailing' in config:
   config['dovetailing'] = True
 if not "min_qual" in config:
     config['min_qual'] = "30"
-    
-##### BioRoot utilities - basics #####  
-module BR:                                                                                                                                                                                                                             │······
-    snakefile: github("BioIT-CEITEC/bioroots_utilities", path="bioroots_utilities.smk",branch="master")                                                                                                                                │······
-    config: config                                                                                                                                                                                                                     │······
-                                                                                                                                                                                                                                       │······
-use rule * from BR as other_* 
+
+##### BioRoot utilities - basics #####
+module BR:
+    snakefile: github("BioIT-CEITEC/bioroots_utilities", path="bioroots_utilities.smk",branch="master")
+    config: config
+
+use rule * from BR as other_*
 
 ## setting organism from reference
 # f = open(os.path.join(GLOBAL_REF_PATH,"reference_info","reference2.json"),)
@@ -50,7 +50,7 @@ fastq_dir = "cleaned_fastq" if (config["preprocess"]!="none") else "raw_fastq"
 # sample_tab = pd.DataFrame.from_dict(config["samples"],orient="index")
 sample_tab = BR.load_sample()
 
-config = BR.load_organism()                                                                                                                                                                                                            │······
+config = BR.load_organism()
 reference_directory = BR.reference_directory()
 
 if not config["is_paired"]:
@@ -76,9 +76,9 @@ rule all:
 include: "rules/alignment_ChIP.smk"
 # include: "rules/prepare_reference.smk"
 
-##### BioRoot utilities - prepare reference #####                                                                                                                                                                                      │······
-module PR:                                                                                                                                                                                                                             │······
-    snakefile: github("BioIT-CEITEC/bioroots_utilities", path="prepare_reference.smk",branch="master")                                                                                                                                 │······
-    config: config                                                                                                                                                                                                                     │······
-                                                                                                                                                                                                                                       │······
-use rule * from PR as other_* 
+##### BioRoot utilities - prepare reference #####
+module PR:
+    snakefile: github("BioIT-CEITEC/bioroots_utilities", path="prepare_reference.smk",branch="master")
+    config: config
+
+use rule * from PR as other_*
