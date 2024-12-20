@@ -40,6 +40,8 @@ else:
   
 if snakemake.params.dovetailing:
   special_arguments += " --dovetail"
+else:
+  special_arguments += " --no-dovetail"
 
 command = "$(which time) bowtie2 -t -p "+str(snakemake.threads)+\
           " -x " + index_prefix +\

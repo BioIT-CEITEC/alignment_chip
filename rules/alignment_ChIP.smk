@@ -35,8 +35,7 @@ rule cleaned_fastq_qc:
 
 rule alignment_bwa:
     input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
-            # ref = expand("{ref_dir}/index/BWA/{ref}.bwt",ref_dir=reference_directory,ref = config["reference"])[0],
-            ref = expand("{ref_dir}/tool_data/BWA/{ref}.bwt",ref_dir=reference_directory,ref=config["reference"])[0],
+            ref = config['organism_bwa'],
     output: bam = "mapped/{sample}.not_markDups.BWA.bam",
     log:    "logs/{sample}/alignment_bwa.log"
     params: entity_name=config["entity_name"],
@@ -47,8 +46,7 @@ rule alignment_bwa:
 
 rule alignment_bowtie2:
     input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
-            # ref = expand("{ref_dir}/index/Bowtie2/{ref}.bowtie2_index.ok",ref_dir=reference_directory,ref = config["reference"])[0],
-            ref = expand("{ref_dir}/tool_data/Bowtie2/{ref}.1.bt2",ref_dir=reference_directory,ref=config["reference"])[0],
+            ref = config['organism_bowtie2'],
     output: bam = "mapped/{sample}.not_markDups.bowtie2.bam",
     log:    "logs/{sample}/alignment_bowtie2.log"
     params: entity_name = config["entity_name"],
@@ -56,6 +54,21 @@ rule alignment_bowtie2:
             dovetailing = config['dovetailing'],
             sensitivity = config['bowtie2_sens'],
             unmapped = "mapped/{sample}.unmapped",
+    threads: 40
+    conda: "../wrappers/alignment_bowtie2/env.yaml"
+    script: "../wrappers/alignment_bowtie2/script.py"
+    
+
+rule alignment_spike_bowtie2:
+    input:  fastq = expand("{dir}/{{sample}}{rt}.fastq.gz", dir=fastq_dir, rt=read_pair_tags),
+            ref = spikein_ref,
+    output: bam = "mapped/{sample}.spike.not_markDups.bowtie2.bam",
+    log:    "logs/{sample}/alignment_spike_bowtie2.log"
+    params: entity_name = config["entity_name"],
+            protocol = "spike",
+            dovetailing = False,
+            sensitivity = 'very',
+            unmapped = "mapped/{sample}.spike.unmapped",
     threads: 40
     conda: "../wrappers/alignment_bowtie2/env.yaml"
     script: "../wrappers/alignment_bowtie2/script.py"
@@ -109,6 +122,7 @@ rule index_and_stats:
             bai = "mapped/{sample}.bam.bai",
             idxstats = "qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",
             flagstats = "qc_reports/{sample}/index_and_stats/{sample}.flagstat.tsv",
+            stats = "qc_reports/{sample}/index_and_stats/{sample}.stats.txt",
     log:    "logs/{sample}/index_and_stats.log"
     threads:    8
     conda: "../wrappers/index_and_stats/env.yaml"
@@ -119,13 +133,16 @@ def alignment_chip_multiqc_inputs(wc):
     inputs = {
       'bam' : expand("mapped/{sample}.bam",sample = sample_tab.sample_name),
       'idxstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",sample = sample_tab.sample_name),
-      'flagstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.flagstat.tsv",sample = sample_tab.sample_name)
+      'flagstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.flagstat.tsv",sample = sample_tab.sample_name),
+      'stats' : expand("qc_reports/{sample}/index_and_stats/{sample}.stats.txt",sample = sample_tab.sample_name)
     }
-    if config["preprocess"]!="none":
-        inputs['trim_stats'] = expand("qc_reports/{sample}/trim_galore/trim_stats{rt}.log", sample=sample_tab.sample_name, rt=read_pair_tags)
-        inputs['fastqc'] = expand("qc_reports/{sample}/{dir}c/{rt}_fastqc.zip", dir=fastq_dir, rt=pair_tag, sample=sample_tab.sample_name)
+    if config["spikein"]:
+      inputs['spikeins'] = expand("mapped/{sample}.spike.bam",sample = sample_tab.sample_name)
+    if config["preprocess"] != "none":
+      inputs['trim_stats'] = expand("qc_reports/{sample}/trim_galore/trim_stats{rt}.log", sample=sample_tab.sample_name, rt=read_pair_tags)
+      inputs['fastqc'] = expand("qc_reports/{sample}/{dir}c/{rt}_fastqc.zip", dir=fastq_dir, rt=pair_tag, sample=sample_tab.sample_name)
     if config["mark_duplicates"]:
-        inputs['dup_log'] = expand("qc_reports/{sample}/MarkDuplicates/{sample}.markDups_metrics.txt",sample = sample_tab.sample_name)
+      inputs['dup_log'] = expand("qc_reports/{sample}/MarkDuplicates/{sample}.markDups_metrics.txt",sample = sample_tab.sample_name)
     return inputs
 
 rule alignment_chip_multiqc:
