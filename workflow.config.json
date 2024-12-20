@@ -14,7 +14,7 @@
     ],
     "outputs_optional": [
       "mapped/{sample}.spike.bam",
-      "mapped/{sample}.spike.bam.bai",
+      "mapped/{sample}.spike.bam.bai"
     ],
     "report_index": "qc_reports/all_samples/alignment_chip_multiqc/multiqc.html",
     "reports":[
