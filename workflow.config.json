@@ -12,6 +12,10 @@
       "logs/*",
       "qc_reports/*"
     ],
+    "outputs_optional": [
+      "mapped/{sample}.spike.bam",
+      "mapped/{sample}.spike.bam.bai",
+    ],
     "report_index": "qc_reports/all_samples/alignment_chip_multiqc/multiqc.html",
     "reports":[
        "qc_reports/*"
@@ -27,11 +31,22 @@
   ],
   "gui_params": {
     "primary": {
-      "reference": {
-        "label": "Genomic Reference",
+      "organism": {
+        "label": "Organism",
         "type": "enum",
-        "default": ##INCLUDE:reference_info/default_reference.json##,
-        "list": ##INCLUDE:reference_info/reference2.json##
+        "dynamicEnumName": "organism"
+      },
+      "assembly": {
+        "label": "Genomic Reference Assembly",
+        "type": "enum",
+        "dynamicEnumName": "assembly",
+        "filters": {
+          "group": {
+            "param": "organism",
+            "type": "value",
+            "showGroupLabel": false
+          }
+        }
       },
       "protocol": {
         "label": "Library preparation",
@@ -49,11 +64,10 @@
         "type": "bool",
         "default": false,
         "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "protocol": "car"
+          "value": {
+            "protocol": {
+              "chipseq": false,
+              "car": true
             }
           }
         }
