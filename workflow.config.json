@@ -4,7 +4,7 @@
     "version": 1.0,
     "label": "Alignment ChIP",
     "type": "alignment_chip",
-    "inputs": "raw_fastq/{sample}*fastq.gz",
+    "inputs": "processed_fastq/{sample}*fastq.gz",
     "outputs": [
       "mapped/{sample}.bam",
       "mapped/{sample}.bam.bai",
