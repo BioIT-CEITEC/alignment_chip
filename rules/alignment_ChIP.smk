@@ -136,12 +136,12 @@ def alignment_chip_multiqc_inputs(wc):
       'flagstats' : expand("qc_reports/{sample}/index_and_stats/{sample}.flagstat.tsv",sample = sample_tab.sample_name),
       'stats' : expand("qc_reports/{sample}/index_and_stats/{sample}.stats.txt",sample = sample_tab.sample_name)
     }
-    if config["spikein"]:
-      inputs['spikeins'] = expand("mapped/{sample}.spike.bam",sample = sample_tab.sample_name)
-    if config["preprocess"] != "none":
+    if config['trim_adapters']:
       inputs['trim_stats'] = expand("qc_reports/{sample}/cutadapt/{sample}_preprocessing.log", sample=sample_tab.sample_name)
       inputs['trim_log'] = expand("logs/{sample}/preprocessing.log", sample=sample_tab.sample_name)
       inputs['fastqc'] = expand("qc_reports/{sample}/{dir}c/{rt}_trim_fastqc.zip", dir=fastq_dir, rt=pair_tag, sample=sample_tab.sample_name)
+    if config["spikein"]:
+      inputs['spikeins'] = expand("mapped/{sample}.spike.bam",sample = sample_tab.sample_name)
     if config["mark_duplicates"]:
       inputs['dup_log'] = expand("qc_reports/{sample}/MarkDuplicates/{sample}.markDups_metrics.txt",sample = sample_tab.sample_name)
     return inputs
@@ -150,7 +150,7 @@ rule alignment_chip_multiqc:
     input:  unpack(alignment_chip_multiqc_inputs)
     output: html= "qc_reports/all_samples/alignment_chip_multiqc/multiqc.html"
     log:    "logs/all_samples/alignment_chip_multiqc.log"
-    params: trim_adapters = config["preprocess"]!="none",
+    params: trim_adapters = config["trim_adapters"],
             mark_duplicates = config["mark_duplicates"],
             umi_usage = config["umi_usage"],
             fastqc_dir = fastq_dir+"c",
