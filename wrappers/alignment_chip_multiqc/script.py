@@ -15,10 +15,8 @@ f = open(log_filename, 'at')
 f.write("## CONDA:\n"+version+"\n")
 f.close()
 
-multiqc_search_paths = "./mapped/*" + " ./qc_reports/*/index_and_stats/*" + " ./qc_reports/*/"+snakemake.params.fastqc_dir+"/*"
+multiqc_search_paths = "./mapped/*" + " ./qc_reports/*/index_and_stats/*"
 
-if snakemake.params.trim_adapters:
-    multiqc_search_paths += " ./qc_reports/*/cutadapt/*" + " ./logs/*/preprocessing.log"
 if snakemake.params.mark_duplicates:
     multiqc_search_paths += " ./qc_reports/*/MarkDuplicates/*"
 

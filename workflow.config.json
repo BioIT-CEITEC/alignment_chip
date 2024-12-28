@@ -27,7 +27,6 @@
   ],
   "requested_params": [
     "is_paired",
-    "trim_adapters",
     "UMI"
   ],
   "gui_params": {
