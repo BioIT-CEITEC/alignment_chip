@@ -190,8 +190,8 @@
       },
       "release": {
         "label": "Release",
-        "type": "bool",
-        "default": false,
+        "type": "constant",
+        "default": "UNK_UNK",
         "conditions": {
           "relevance": {
             "operand": "equal",
