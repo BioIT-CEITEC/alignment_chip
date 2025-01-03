@@ -188,10 +188,79 @@
           }
         }
       },
-      "feature_count": {
+      "release": {
+        "label": "Release",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "featureCount": {
         "label": "Feature count",
         "type": "bool",
         "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "count_over": {
+        "label": "Count over (exon, gene, transcript, three_prime_UTR, five_prime_UTR)",
+        "type": "string",
+        "default": "exon",
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "HTSeqCount": {
+        "label": "HTSeqCount",
+        "type": "bool",
+        "default": false,
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "htseq_mode": {
+        "label": "HTSeq mode",
+        "type": "enum",
+        "default": "union",
+        "list": {
+          "union": "union",
+          "intersection-strict": "intersection-strict",
+          "intersection-nonempty": "intersection-nonempty"},
+        "conditions": {
+          "relevance": {
+            "operand": "equal",
+            "negation": false,
+            "values": {"lib_ROI": "rna"}
+          }
+        }
+      },
+      "htseq_nonunique": {
+        "label": "HTSeq nonunique",
+        "type": "enum",
+        "default": "none",
+        "list": {
+          "none": "none",
+          "all": "all",
+          "fraction": "fraction",
+          "random": "random"},
         "conditions": {
           "relevance": {
             "operand": "equal",
