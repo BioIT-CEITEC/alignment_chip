@@ -174,148 +174,36 @@
         }
       },
        "lib_ROI": {
-        "label": "Regions of interest",
-        "type": "enum",
-        "default": "wgs",
-        "list": {"wgs": "WGS or no DNA panel"},
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "UMI": "It's a hack to never show this in GUI"
-            }
-          }
-        }
-      },
-      "release": {
-        "label": "Release",
         "type": "constant",
-        "default": "UNK_UNK",
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "default": "wgs"
       },
       "featureCount": {
-        "label": "Feature count",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "count_over": {
-        "label": "Count over (exon, gene, transcript, three_prime_UTR, five_prime_UTR)",
-        "type": "string",
-        "default": "exon",
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
-      },
-      "HTSeqCount": {
-        "label": "HTSeqCount",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
-      },
-      "htseq_mode": {
-        "label": "HTSeq mode",
-        "type": "enum",
-        "default": "union",
-        "list": {
-          "union": "union",
-          "intersection-strict": "intersection-strict",
-          "intersection-nonempty": "intersection-nonempty"},
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
-      },
-      "htseq_nonunique": {
-        "label": "HTSeq nonunique",
-        "type": "enum",
-        "default": "none",
-        "list": {
-          "none": "none",
-          "all": "all",
-          "fraction": "fraction",
-          "random": "random"},
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": "exon"
       },
       "RSEM": {
-        "label": "RSEM",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "salmon_align": {
-        "label": "Salmon quantification BAM-based",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "salmon_map": {
-        "label": "Salmon quantification fastq-based",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "kallisto": {
-        "label": "Kallisto",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
+      },
+      "release": {
+        "type": "constant",
+        "default": "UNK_UNK"
       }
     }
   }
