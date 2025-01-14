@@ -4,15 +4,15 @@
     "version": 1.0,
     "label": "Alignment ChIP",
     "type": "alignment_chip",
-    "inputs": "raw_fastq/{sample}*fastq.gz",
+    "inputs": "processed_fastq/{sample}*fastq.gz",
     "outputs": [
-      "cleaned_fastq/{sample}*",
       "mapped/{sample}.bam",
       "mapped/{sample}.bam.bai",
       "logs/*",
       "qc_reports/*"
     ],
     "outputs_optional": [
+      "processed_fastq/{sample}*",
       "mapped/{sample}.spike.bam",
       "mapped/{sample}.spike.bam.bai"
     ],
@@ -74,114 +74,6 @@
       }
     },
     "detailed": {
-      "preprocess": {
-        "label": "Reads preprocess",
-        "type": "enum",
-        "default": "automatic",
-        "list": {
-          "none": "None",
-          "automatic": "Automatic",
-          "advanced": "Advanced"
-        }
-      },
-      "trim_adapters": {
-        "label": "Adapters to trim (preprocess)",
-        "type": "string",
-        "default": "",
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
-      "min_length": {
-        "label": "Min length (preprocess)",
-        "type": "int",
-        "default": 25,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
-      "min_qual": {
-        "label": "Trim low-quality ends (preprocess)",
-        "type": "int",
-        "default": 30,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
-      "trim_left1": {
-        "label": "Trim left R1 (preprocess)",
-        "type": "int",
-        "default": 0,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
-      "trim_left2": {
-        "label": "Trim left R2 (preprocess)",
-        "type": "int",
-        "default": 0,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
-      "trim_right1": {
-        "label": "Trim right R1 (preprocess)",
-        "type": "int",
-        "default": 0,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
-      "trim_right2": {
-        "label": "Trim right R2 (preprocess)",
-        "type": "int",
-        "default": 0,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "preprocess": "advanced"
-            }
-          }
-        }
-      },
       "aligner": {
         "label": "Tool for alignment",
         "type": "enum",
@@ -282,79 +174,36 @@
         }
       },
        "lib_ROI": {
-        "label": "Regions of interest",
-        "type": "enum",
-        "default": "wgs",
-        "list": {"wgs": "WGS or no DNA panel"},
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {
-              "UMI": "It's a hack to never show this in GUI"
-            }
-          }
-        }
+        "type": "constant",
+        "default": "wgs"
       },
-      "feature_count": {
-        "label": "Feature count",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+      "featureCount": {
+        "type": "constant",
+        "default": false
+      },
+      "count_over": {
+        "type": "constant",
+        "default": "exon"
       },
       "RSEM": {
-        "label": "RSEM",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "salmon_align": {
-        "label": "Salmon quantification BAM-based",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "salmon_map": {
-        "label": "Salmon quantification fastq-based",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
       },
       "kallisto": {
-        "label": "Kallisto",
-        "type": "bool",
-        "default": false,
-        "conditions": {
-          "relevance": {
-            "operand": "equal",
-            "negation": false,
-            "values": {"lib_ROI": "rna"}
-          }
-        }
+        "type": "constant",
+        "default": false
+      },
+      "release": {
+        "type": "constant",
+        "default": "UNK_UNK"
       }
     }
   }

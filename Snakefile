@@ -29,7 +29,7 @@ module BR:
 
 use rule * from BR as other_*
 
-fastq_dir = "cleaned_fastq" if (config["preprocess"]!="none") else "raw_fastq"
+fastq_dir = "processed_fastq" 
 
 # Samples
 sample_tab = BR.load_sample()
