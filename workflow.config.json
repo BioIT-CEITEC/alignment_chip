@@ -12,7 +12,6 @@
       "qc_reports/*"
     ],
     "outputs_optional": [
-      "processed_fastq/{sample}*",
       "mapped/{sample}.spike.bam",
       "mapped/{sample}.spike.bam.bai"
     ],
