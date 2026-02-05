@@ -121,20 +121,6 @@
           }
         }
       },
-      "max_len_frags": {
-        "label": "Max fragment length (alignment)",
-        "info": "Maximum allowed fragment length for peak calling. Longer fragments will be removed. For example, for Cut&Run protocol, it matters if fragments are shorter than 120 bps if looking for TF binding sites.",
-        "type": "int",
-        "default": 1000,
-        "conditions": {
-          "value": {
-            "protocol": {
-              "chipseq": 1000,
-              "car": 120
-            }
-          }
-        }
-      },
       "mark_duplicates": {
         "label": "Mark duplicated reads",
         "type": "bool",

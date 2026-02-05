@@ -72,18 +72,18 @@ rule mark_duplicates:
     script: "../wrappers/mark_duplicates/script.py"
 
 
-rule max_length_filter:
-    input:  bam = "mapped/{sample}.markDups.bam",
-    output: bam = "mapped/{sample}.markDups.maxLen.bam"
-    log:    "logs/{sample}/max_length_filter.log"
-    threads:  4
-    params: max_len_frags = config['max_len_frags'],
-    conda:  "../wrappers/max_length_filter/env.yaml"
-    script: "../wrappers/max_length_filter/script.py"
+#rule max_length_filter:
+#    input:  bam = "mapped/{sample}.markDups.bam",
+#    output: bam = "mapped/{sample}.markDups.maxLen.bam"
+#    log:    "logs/{sample}/max_length_filter.log"
+#    threads:  4
+#    params: max_len_frags = config['max_len_frags'],
+#    conda:  "../wrappers/max_length_filter/env.yaml"
+#    script: "../wrappers/max_length_filter/script.py"
 
 
 rule index_and_stats:
-    input:  "mapped/{sample}.markDups.maxLen.bam",
+    input:  "mapped/{sample}.markDups.bam",
     output: bam = "mapped/{sample}.bam",
             bai = "mapped/{sample}.bam.bai",
             idxstats = "qc_reports/{sample}/index_and_stats/{sample}.idxstats.tsv",
