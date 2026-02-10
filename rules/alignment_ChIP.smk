@@ -19,7 +19,6 @@ rule alignment_bowtie2:
             protocol = config['protocol'],
             dovetailing = config['dovetailing'],
             sensitivity = config['bowtie2_sens'],
-            unmapped = "mapped/{sample}.unmapped",
     threads: 40
     conda: "../wrappers/alignment_bowtie2/env.yaml"
     script: "../wrappers/alignment_bowtie2/script.py"
@@ -34,7 +33,6 @@ rule alignment_spike_bowtie2:
             protocol = "spike",
             dovetailing = False,
             sensitivity = 'very',
-            unmapped = "mapped/{sample}.spike.unmapped",
     threads: 40
     conda: "../wrappers/alignment_bowtie2/env.yaml"
     script: "../wrappers/alignment_bowtie2/script.py"
