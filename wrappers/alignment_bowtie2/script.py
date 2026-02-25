@@ -36,10 +36,13 @@ if snakemake.params.sensitivity == "very":
 else:
   special_arguments += " --sensitive"
 
-if snakemake.params.dovetailing:
+if snakemake.params.dovetailing and snakemake.params.protocol != "spike":
   special_arguments += " --dovetail"
 else:
   special_arguments += " --no-dovetail"
+
+if snakemake.params.protocol == "spike":
+  special_arguments += " --no-overlap"
 
 command = "$(which time) bowtie2 -t -p "+str(snakemake.threads)+\
           " -x " + index_prefix +\
